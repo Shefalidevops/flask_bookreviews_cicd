@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-bookreviews
+  labels:
+    app: flask-bookreviews
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flask-bookreviews
+  template:
+    metadata:
+      labels:
+        app: flask-bookreviews
+    spec:
+      containers:
+      - name: flask-bookreviews
+        image: YOUR_DOCKERHUB_USERNAME/flask-bookreviews:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: SECRET_KEY
+          value: "production-secret-key-change-me"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
